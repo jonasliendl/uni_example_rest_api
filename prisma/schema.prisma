@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  firstName String @db.VarChar(100)
+  lastName String @db.VarChar(100)
+  biography String? @db.VarChar(1000)
+  dateOfBirth DateTime?
+  type UserType[]
+  createdAt DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+}
+
+model Podcast {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(150)
+  description String @db.VarChar(1000)
+  duration Int
+  podcastHosts Int[]
+  createdAt DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+}
+
+model Movie {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(150)
+  description String @db.VarChar(1000)
+  yearOfRelease Int
+  duration Int
+  actors Int[] @default([])
+  directors Int[]
+  rating Int?
+  createdAt DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+}
+
+model Book {
+  id Int @id @default(autoincrement())
+  title String @db.VarChar(150)
+  description String @db.VarChar(1000)
+  pageCount Int
+  publishDate DateTime
+  authors Int[]
+  createdAt DateTime @default(now())
+  lastUpdatedAt DateTime @updatedAt
+}
+
+enum UserType {
+  Actor
+  Director
+  Hoster
+  Author
+}
