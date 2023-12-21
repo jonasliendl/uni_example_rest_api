@@ -1,10 +1,12 @@
 import { Application } from "express";
 import { initRoutes } from "./routes/router";
 import { PrismaClient } from "@prisma/client";
+import express from 'express';
+import dotenv from 'dotenv';
+import bodyParser from "body-parser";
 
-const express = require('express');
 const app: Application = express();
-const bodyParser = require('body-parser');
+dotenv.config();
 
 app.use(bodyParser.json());
 
@@ -15,7 +17,7 @@ prismaClient.$connect()
 
 initRoutes(app);
 
-app.listen(3000, () => {
+app.listen(process.env.SERVER_PORT, () => {
     console.log('Server is running on port 3000');
 });
 
