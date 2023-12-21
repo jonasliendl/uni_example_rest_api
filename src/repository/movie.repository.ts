@@ -1,7 +1,8 @@
-import { Movie, PrismaClient } from "@prisma/client";
-import { Repository } from "./repository";
+import { $Enums, Movie, PrismaClient } from "@prisma/client";
+import { Repository, RepositoryRelations } from "./repository";
+import { MovieWithRelations } from "../resources/movie.resource";
 
-class MovieRepository implements Repository<Movie> {
+class MovieRepository implements Repository<Movie>, RepositoryRelations<MovieWithRelations> {
     private readonly _prisma: PrismaClient = new PrismaClient();
 
     async create(item: Movie): Promise<Movie> {
@@ -12,7 +13,6 @@ class MovieRepository implements Repository<Movie> {
                 yearOfRelease: item.yearOfRelease,
                 duration: item.duration,
                 rating: item.rating,
-                actors: item.actors,
             },
         });
         if (!movie) throw new Error("Movie not created");
@@ -28,7 +28,6 @@ class MovieRepository implements Repository<Movie> {
                 yearOfRelease: item.yearOfRelease,
                 duration: item.duration,
                 rating: item.rating,
-                actors: item.actors,
             },
         });
         if (!updatedMovie) throw new Error("Movie not updated");
@@ -49,6 +48,49 @@ class MovieRepository implements Repository<Movie> {
         const movie = await this._prisma.movie.findUnique({ where: { id } });
         if (!movie) throw new Error("Movie not found");
         return movie;
+    }
+
+    async findWithRelations(): Promise<MovieWithRelations[]> {
+        const movie = await this._prisma.movie.findMany({
+            include: { users: true },
+        });
+        if (!movie) throw new Error("Movie not found");
+        return movie;
+    }
+    
+    async findOneWithRelations(id: number): Promise<MovieWithRelations> {
+        const movie = await this._prisma.movie.findUnique({
+            where: { id },
+            include: { users: true },
+        });
+        if (!movie) throw new Error("Movie not found");
+        return movie;
+    }
+
+    async addRelation(movieId: number, userId: number, type: $Enums.UserToMovieType): Promise<void> {
+        const movie = await this._prisma.movie.update({
+            where: { id: movieId },
+            data: {
+                users: {
+                    create: {
+                        userId,
+                        type,
+                    }
+                }
+            },
+        });
+        if (!movie) throw new Error("Error adding relation");
+    }
+
+    async removeRelation(movieId: number, userId: number, type: $Enums.UserToMovieType): Promise<void> {
+        const relation = await this._prisma.userToMovie.deleteMany({
+            where: {
+                movieId,
+                userId,
+                type,
+            },
+        });
+        if (!relation) throw new Error("Error removing relation");
     }
 }
 

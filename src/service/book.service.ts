@@ -1,8 +1,9 @@
 import { Book } from "@prisma/client";
-import { Service } from "./service";
+import { Service, ServiceRelations } from "./service";
 import BookRepository from "../repository/book.repository";
+import { BookWithAuthors } from "../resources/book.resource";
 
-class BookService implements Service<Book> {
+class BookService implements Service<Book>, ServiceRelations<BookWithAuthors> {
     private readonly _repository = new BookRepository();
 
     private validate(item: Book): void {
@@ -31,6 +32,22 @@ class BookService implements Service<Book> {
 
     async findOne(id: number): Promise<Book> {
         return await this._repository.findOne(id);
+    }
+
+    async addAuthor(bookId: number, authorId: number): Promise<void> {
+        await this._repository.addAuthor(bookId, authorId);
+    }
+
+    async removeAuthor(bookId: number, authorId: number): Promise<void> {
+        await this._repository.removeAuthor(bookId, authorId);
+    }
+
+    async findWithRelations(): Promise<BookWithAuthors[]> {
+        return await this._repository.findWithRelations();
+    }
+
+    async findOneWithRelations(id: number): Promise<BookWithAuthors> {
+        return await this._repository.findOneWithRelations(id);
     }
 }
 

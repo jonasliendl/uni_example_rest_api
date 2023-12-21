@@ -8,9 +8,17 @@ export const initMovieRoutes = (router: Router) => {
 
     router.get('/movies', movieController.getAll);
 
-    router.post('/movies', movieController.create);
+    router.post('/movie', movieController.create);
 
-    router.put('/movies/:id', movieController.update);
+    router.put('/movie/:id', movieController.update);
 
-    router.delete('/movies/:id', movieController.delete);
+    router.delete('/movie/:id', movieController.delete);
+
+    router.post('/movie/:id/actor/:actorId', movieController.addActor);
+
+    router.delete('/movie/:id/actor/:actorId', movieController.removeActor);
+
+    router.post('/movie/:id/director/:directorId', movieController.addDirector);
+
+    router.delete('/movie/:id/director/:directorId', movieController.removeDirector);
 }

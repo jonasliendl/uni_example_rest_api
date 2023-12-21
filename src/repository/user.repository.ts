@@ -11,7 +11,6 @@ class UserRepository implements Repository<User> {
                 lastName: item.lastName,
                 biography: item.biography,
                 dateOfBirth: item.dateOfBirth,
-                type: item.type,
             },
         });
         if (!user) throw new Error("User not created");
@@ -25,7 +24,6 @@ class UserRepository implements Repository<User> {
                 lastName: item.lastName,
                 biography: item.biography,
                 dateOfBirth: item.dateOfBirth,
-                type: item.type,
             },
         });
         if (!updatedUser) throw new Error("User not updated");

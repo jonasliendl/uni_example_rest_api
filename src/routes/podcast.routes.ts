@@ -13,4 +13,8 @@ export const initPodcastRoutes = (router: Router) => {
     router.put('/podcast/:id', podcastController.update);
 
     router.delete('/podcast/:id', podcastController.delete);
+
+    router.post('/podcast/:id/host/:hostId', podcastController.addHost);
+
+    router.delete('/podcast/:id/host/:hostId', podcastController.removeHost);
 }

@@ -8,9 +8,13 @@ export const initBookRoutes = (router: Router) => {
 
     router.get('/books', bookController.getAll);
 
-    router.post('/books', bookController.create);
+    router.post('/book', bookController.create);
 
-    router.put('/books/:id', bookController.update);
+    router.put('/book/:id', bookController.update);
 
-    router.delete('/books/:id', bookController.delete);
+    router.delete('/book/:id', bookController.delete);
+
+    router.post('/book/:id/author/:authorId', bookController.addAuthor);
+
+    router.delete('/book/:id/author/:authorId', bookController.removeAuthor);
 }

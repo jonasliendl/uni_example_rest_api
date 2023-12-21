@@ -5,3 +5,8 @@ export interface Repository<T> {
     find(): Promise<T[]>;
     findOne(id: number): Promise<T>;
 }
+
+export interface RepositoryRelations<T> {
+    findWithRelations(): Promise<T[]>;
+    findOneWithRelations(id: number): Promise<T>;
+}

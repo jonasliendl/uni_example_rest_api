@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { User } from "@prisma/client";
 import { Controller } from "./controller";
 import UserService from "../service/user.service";
+import { handleError } from "../utils/error";
 
 class UserController implements Controller {
     private readonly _userService = new UserService();
@@ -14,33 +15,62 @@ class UserController implements Controller {
         this.delete = this.delete.bind(this);
     }
 
-    getAll(req: Request, res: Response): void {
-        const users = this._userService.find();
+    async getAll(req: Request, res: Response): Promise<void> {
+        let users: User[] = [];
+        try {
+            users = await this._userService.find();
+        } catch (error) {
+            handleError(error, res);
+            return;
+        }
         res.status(200).json(users);
     }
 
-    getById(req: Request, res: Response): void {
+    async getById(req: Request, res: Response): Promise<void> {
         const id = Number(req.params.id);
-        const user = this._userService.findOne(id);
+        let user: User;
+        try {
+            user = await this._userService.findOne(id);
+        } catch (error) {
+            handleError(error, res);
+            return;
+        }
         res.status(200).json(user);
     }
 
-    create(req: Request, res: Response): void {
-        const user = req.body as User;
-        const newUser = this._userService.create(user);
+    async create(req: Request, res: Response): Promise<void> {
+        const user: User = req.body;
+        let newUser: User;
+        try {
+            newUser = await this._userService.create(user);
+        } catch (error) {
+            handleError(error, res);
+            return;
+        }
         res.status(201).json(newUser);
     }
 
-    update(req: Request, res: Response): void {
+    async update(req: Request, res: Response): Promise<void> {
         const id = Number(req.params.id);
         const user = req.body as User;
-        const updatedUser = this._userService.update(id, user);
+        let updatedUser: User;
+        try {
+            updatedUser = await this._userService.update(id, user);
+        } catch (error) {
+            handleError(error, res);
+            return;
+        }
         res.status(200).json(updatedUser);
     }
 
-    delete(req: Request, res: Response): void {
+    async delete(req: Request, res: Response): Promise<void> {
         const id = Number(req.params.id);
-        this._userService.delete(id);
+        try {
+            await this._userService.delete(id);
+        } catch (error) {
+            handleError(error, res);
+            return;
+        }
         res.status(204).end();
     }
 }

@@ -1,7 +1,8 @@
 import { Podcast, PrismaClient } from "@prisma/client";
-import { Repository } from "./repository";
+import { Repository, RepositoryRelations } from "./repository";
+import { PodcastWithRelations } from "../resources/podcast.resource";
 
-class PodcastRepository implements Repository<Podcast> {
+class PodcastRepository implements Repository<Podcast>, RepositoryRelations<PodcastWithRelations> {
     private readonly _prisma: PrismaClient = new PrismaClient();
 
     async create(item: Podcast): Promise<Podcast> {
@@ -10,7 +11,6 @@ class PodcastRepository implements Repository<Podcast> {
                 title: item.title,
                 description: item.description,
                 duration: item.duration,
-                podcastHosts: item.podcastHosts,
             },
         });
         if (!podcast) throw new Error("Podcast not created");
@@ -24,7 +24,6 @@ class PodcastRepository implements Repository<Podcast> {
                 title: item.title,
                 description: item.description,
                 duration: item.duration,
-                podcastHosts: item.podcastHosts,
             },
         });
         if (!updatedPodcast) throw new Error("Podcast not updated");
@@ -45,6 +44,39 @@ class PodcastRepository implements Repository<Podcast> {
         const podcast = await this._prisma.podcast.findUnique({ where: { id } });
         if (!podcast) throw new Error("Podcast not found");
         return podcast;
+    }
+
+    async findWithRelations(): Promise<PodcastWithRelations[]> {
+        return await this._prisma.podcast.findMany({
+            include: {
+                podcastHosts: true,
+            },
+        });
+    }
+
+    async findOneWithRelations(id: number): Promise<PodcastWithRelations> {
+        const podcast = await this._prisma.podcast.findUnique({
+            where: { id },
+            include: {
+                podcastHosts: true,
+            },
+        });
+        if (!podcast) throw new Error("Podcast not found");
+        return podcast;
+    }
+
+    async addPodcastHost(podcastId: number, userId: number): Promise<void> {
+        await this._prisma.podcast.update({
+            where: { id: podcastId },
+            data: { podcastHosts: { connect: { id: userId } } },
+        });
+    }
+
+    async removePodcastHost(podcastId: number, userId: number): Promise<void> {
+        await this._prisma.podcast.update({
+            where: { id: podcastId },
+            data: { podcastHosts: { disconnect: { id: userId } } },
+        });
     }
 }
 

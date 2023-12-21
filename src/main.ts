@@ -4,6 +4,9 @@ import { PrismaClient } from "@prisma/client";
 
 const express = require('express');
 const app: Application = express();
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
 
 const prismaClient = new PrismaClient();
 prismaClient.$connect()
